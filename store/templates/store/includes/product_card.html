@@ -1,0 +1,5 @@
+<div class="product-card">
+    <img src="{{ product.image_path|default:'/static/images/picture.png' }}" alt="{{ product.name }}">
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.price }} руб.</p>
+</div>

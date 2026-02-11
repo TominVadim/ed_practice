@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Каталог товаров{% endblock %}
+{% block content %}
+<h2>Каталог обуви</h2>
+
+<!-- Фильтры и поиск -->
+<div class="filters">
+    <input type="text" id="search" placeholder="Поиск..." value="{{ current_search }}">
+    
+    <select id="supplier">
+        <option value="all" {% if current_filter == 'all' %}selected{% endif %}>Все поставщики</option>
+        {% for supplier in suppliers %}
+        <option value="{{ supplier.name }}" {% if current_filter == supplier.name %}selected{% endif %}>{{ supplier.name }}</option>
+        {% endfor %}
+    </select>
+    
+    <select id="sort">
+        <option value="">Без сортировки</option>
+        <option value="asc" {% if current_sort == 'asc' %}selected{% endif %}>По количеству (возр.)</option>
+        <option value="desc" {% if current_sort == 'desc' %}selected{% endif %}>По количеству (убыв.)</option>
+    </select>
+</div>
+
+<!-- Список товаров -->
+<div class="products">
+    {% for product in products %}
+    <div class="product-card {% if product.discount_percent > 15 %}high-discount{% endif %} {% if product.stock_quantity == 0 %}out-of-stock{% endif %}">
+        <img src="{{ product.image_path|default:'/static/images/picture.png' }}" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p>Артикул: {{ product.article }}</p>
+        <p>Категория: {{ product.category.name }}</p>
+        <p>Производитель: {{ product.manufacturer.name|default:'Не указан' }}</p>
+        <p>Поставщик: {{ product.supplier.name|default:'Не указан' }}</p>
+        
+        {% if product.discount_percent > 0 %}
+            <p class="old-price">{{ product.price }} руб.</p>
+            <p class="final-price">{{ product.final_price|floatformat:2 }} руб.</p>
+            <p class="discount">Скидка: {{ product.discount_percent }}%</p>
+        {% else %}
+            <p class="price">{{ product.price }} руб.</p>
+        {% endif %}
+        
+        <p>В наличии: {{ product.stock_quantity }} шт.</p>
+        
+        {% if user.role == 'admin' %}
+        <div class="admin-actions">
+            <a href="{% url 'store:product_edit' product.id %}">Редактировать</a>
+            <a href="{% url 'store:product_delete' product.id %}" class="delete">Удалить</a>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script src="/static/js/filter.js"></script>
+<script src="/static/js/product_highlight.js"></script>
+{% endblock %}

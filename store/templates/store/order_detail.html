@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Заказ №{{ object.order_number }}{% endblock %}
+{% block content %}
+<h2>Детали заказа №{{ object.order_number }}</h2>
+
+<div class="order-info">
+    <p><strong>Дата заказа:</strong> {{ object.order_date }}</p>
+    <p><strong>Клиент:</strong> {{ object.user.full_name }}</p>
+    <p><strong>Менеджер:</strong> {{ object.manager.full_name|default:'Не назначен' }}</p>
+    <p><strong>Пункт выдачи:</strong> {{ object.pickup_point.address }}</p>
+    <p><strong>Код получения:</strong> {{ object.receive_code }}</p>
+    <p><strong>Статус:</strong> {{ object.get_status_display }}</p>
+</div>
+
+<h3>Состав заказа</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Товар</th>
+            <th>Количество</th>
+            <th>Цена</th>
+            <th>Сумма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in object.items.all %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price_at_order }} руб.</td>
+            <td>{{ item.quantity|floatformat:0|add:item.price_at_order }} руб.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
